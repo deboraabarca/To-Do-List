@@ -259,3 +259,36 @@ function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
+
+// Abrir modal para editar tarea
+function openEditModal(taskId) {
+  const task = tasks.find((task) => task.id === taskId);
+  if (!task) return;
+
+  currentEditingTaskId = taskId;
+  editTaskInput.value = task.text;
+  taskDateInput.value = task.date;
+
+  modal.classList.add("show");
+}
+
+// Guardar cambios de la tarea
+function saveTaskChanges() {
+  if (!currentEditingTaskId) return;
+
+  const taskIndex = tasks.findIndex((task) => task.id === currentEditingTaskId);
+  if (taskIndex === -1) return;
+
+  const newText = editTaskInput.value.trim();
+  const newDate = taskDateInput.value;
+
+  if (newText) {
+    tasks[taskIndex].text = newText;
+    tasks[taskIndex].date = newDate;
+
+    saveTasks();
+    renderTasks();
+    modal.classList.remove("show");
+    currentEditingTaskId = null;
+  }
+}
