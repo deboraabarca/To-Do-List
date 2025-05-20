@@ -189,3 +189,73 @@ function handleTaskActions(e) {
     }
   }
 }
+
+// Renderizar las tareas en el DOM
+function renderTasks() {
+  const filteredTasks = filterTasks();
+
+  tasksList.innerHTML = "";
+
+  if (filteredTasks.length === 0) {
+    tasksList.innerHTML = `
+            <div class="empty-state">
+                <p>No tasks available</p>
+            </div>
+        `;
+    return;
+  }
+
+  filteredTasks.forEach((task) => {
+    const taskElement = document.createElement("div");
+    taskElement.classList.add("task-item");
+    taskElement.dataset.id = task.id;
+
+    // Si estamos en la vista de papelera
+    if (currentFilter === "trash") {
+      taskElement.classList.add("deleted");
+      taskElement.innerHTML = `
+                <div class="task-content">${task.text}</div>
+                <div class="task-date">Scheduled: ${formatDate(task.date)}</div>
+                <div class="trash-action">
+                    <button class="restore-btn">Restore</button>
+                    <button class="delete-forever-btn">Delete Forever</button>
+                </div>
+            `;
+    } else {
+      taskElement.innerHTML = `
+                <div class="task-checkbox ${
+                  task.completed ? "checked" : ""
+                }"></div>
+                <div class="task-content ${task.completed ? "checked" : ""}">${
+        task.text
+      }</div>
+                <div class="task-date">${formatDate(task.date)}</div>
+                <div class="task-actions">
+                    <button class="task-star ${
+                      task.starred ? "starred" : ""
+                    }">★</button>
+                    <button class="task-edit">✎</button>
+                    <button class="task-delete">×</button>
+                </div>
+            `;
+    }
+
+    tasksList.appendChild(taskElement);
+  });
+}
+
+// Formatear fecha para mostrar
+function formatDate(dateString) {
+  if (!dateString) return "";
+
+  const today = new Date().toISOString().split("T")[0];
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split("T")[0];
+
+  if (dateString === today) return "Today";
+  if (dateString === tomorrowStr) return "Tomorrow";
+
+  const date = new Date(dateString);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
