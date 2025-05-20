@@ -110,3 +110,82 @@ function filterTasks() {
       return tasks;
   }
 }
+
+// Manejar acciones en las tareas (marcar, destacar, eliminar, editar)
+function handleTaskActions(e) {
+  const target = e.target;
+  const taskItem = target.closest(".task-item");
+
+  if (!taskItem) return;
+
+  const taskId = parseInt(taskItem.dataset.id);
+
+  // Para tareas normales
+  if (currentFilter !== "trash") {
+    const taskIndex = tasks.findIndex((task) => task.id === taskId);
+
+    if (taskIndex === -1) return;
+
+    // Marcar como completada
+    if (
+      target.classList.contains("task-checkbox") ||
+      target.closest(".task-checkbox")
+    ) {
+      tasks[taskIndex].completed = !tasks[taskIndex].completed;
+      saveTasks();
+      renderTasks();
+    }
+
+    // Destacar tarea
+    if (
+      target.classList.contains("task-star") ||
+      target.closest(".task-star")
+    ) {
+      tasks[taskIndex].starred = !tasks[taskIndex].starred;
+      saveTasks();
+      renderTasks();
+    }
+
+    // Editar tarea
+    if (
+      target.classList.contains("task-edit") ||
+      target.closest(".task-edit")
+    ) {
+      openEditModal(taskId);
+    }
+
+    // Mover a papelera
+    if (
+      target.classList.contains("task-delete") ||
+      target.closest(".task-delete")
+    ) {
+      const deletedTask = tasks.splice(taskIndex, 1)[0];
+      deletedTasks.push(deletedTask);
+      saveDeletedTasks();
+      saveTasks();
+      renderTasks();
+    }
+  }
+  // Para tareas eliminadas
+  else {
+    const taskIndex = deletedTasks.findIndex((task) => task.id === taskId);
+
+    if (taskIndex === -1) return;
+
+    // Restaurar tarea
+    if (target.classList.contains("restore-btn")) {
+      const restoredTask = deletedTasks.splice(taskIndex, 1)[0];
+      tasks.push(restoredTask);
+      saveDeletedTasks();
+      saveTasks();
+      renderTasks();
+    }
+
+    // Eliminar permanentemente
+    if (target.classList.contains("delete-forever-btn")) {
+      deletedTasks.splice(taskIndex, 1);
+      saveDeletedTasks();
+      renderTasks();
+    }
+  }
+}
