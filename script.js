@@ -292,3 +292,5 @@ function saveTaskChanges() {
     currentEditingTaskId = null;
   }
 }
+// Iniciar la aplicación
+document.addEventListener("DOMContentLoaded", init);
