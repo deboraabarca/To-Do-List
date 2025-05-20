@@ -92,3 +92,21 @@ function saveTasks() {
 function saveDeletedTasks() {
   localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks));
 }
+
+// Filtrar tareas según la categoría seleccionada
+function filterTasks() {
+  const today = new Date().toISOString().split("T")[0];
+
+  switch (currentFilter) {
+    case "starred":
+      return tasks.filter((task) => task.starred);
+    case "today":
+      return tasks.filter((task) => task.date === today);
+    case "scheduled":
+      return tasks.filter((task) => task.date > today);
+    case "trash":
+      return deletedTasks;
+    default:
+      return tasks;
+  }
+}
