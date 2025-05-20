@@ -14,3 +14,50 @@ let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let deletedTasks = JSON.parse(localStorage.getItem("deletedTasks")) || [];
 let currentFilter = "all";
 let currentEditingTaskId = null;
+
+// Inicializar la aplicación
+function init() {
+  renderTasks();
+  setupEventListeners();
+
+  // Establecer la fecha mínima como hoy para el selector de fecha
+  const today = new Date().toISOString().split("T")[0];
+  taskDateInput.setAttribute("min", today);
+}
+
+// Configurar event listeners
+function setupEventListeners() {
+  // Agregar tarea
+  addTaskBtn.addEventListener("click", addTask);
+  taskInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") {
+      addTask();
+    }
+  });
+
+  // Cambiar categoría
+  categoryBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      categoryBtns.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentFilter = btn.dataset.category;
+      renderTasks();
+    });
+  });
+
+  // Delegación de eventos para las tareas
+  tasksList.addEventListener("click", handleTaskActions);
+
+  // Modal events
+  closeModal.addEventListener("click", () => {
+    modal.classList.remove("show");
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === modal) {
+      modal.classList.remove("show");
+    }
+  });
+
+  saveTaskBtn.addEventListener("click", saveTaskChanges);
+}
