@@ -61,3 +61,34 @@ function setupEventListeners() {
 
   saveTaskBtn.addEventListener("click", saveTaskChanges);
 }
+
+// Agregar una nueva tarea
+function addTask() {
+  const taskText = taskInput.value.trim();
+  if (taskText) {
+    const today = new Date().toISOString().split("T")[0];
+    const newTask = {
+      id: Date.now(),
+      text: taskText,
+      completed: false,
+      starred: false,
+      date: today, // Por defecto se programa para hoy
+      deleted: false,
+    };
+
+    tasks.push(newTask);
+    saveTasks();
+    renderTasks();
+    taskInput.value = "";
+  }
+}
+
+// Guardar tareas en localStorage
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+// Guardar tareas eliminadas en localStorage
+function saveDeletedTasks() {
+  localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks));
+}
